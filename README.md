@@ -45,7 +45,18 @@ and `GM_xmlhttpRequest`. `SECURITY.md` says why.
 
 ## Install
 
-### Arch, via the PKGBUILD
+### One line
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SettDEF/tela-zen/main/install.sh | bash
+```
+
+It installs the dependencies, clones to `~/.local/share/tela-zen`, builds the
+package and installs it. Re-run it to update. `--yes` takes every default,
+`--run` launches afterwards, `--dir PATH` builds somewhere else; pass them
+through the pipe with `bash -s -- --yes`.
+
+### Arch, by hand
 
 ```sh
 git clone https://github.com/SettDEF/tela-zen
@@ -53,8 +64,8 @@ cd tela-zen/packaging
 makepkg -si
 ```
 
-It builds from the checkout it sits in, so `makepkg -si` after any edit installs
-exactly what you have.
+The PKGBUILD builds from the checkout it sits in, so `makepkg -si` after any
+edit installs exactly what you have.
 
 ### From source
 
