@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=Tela
+GenericName=Web Browser
+Comment=Keyboard-first browser with a Rust core
+Exec=tela %U
+Icon=tela
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+StartupWMClass=tela
+Keywords=browser;internet;web;
+Actions=NewWindow;
+
+[Desktop Action NewWindow]
+Name=New Window
+Exec=tela

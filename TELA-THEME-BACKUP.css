@@ -1,0 +1,205 @@
+/* Tela shell — matched to the old Qt Tela reference.
+   Near-black surfaces, vivid green accent (the "P" chip), narrow favicon rail,
+   rounded floating page-card inset on all sides.
+   NOTE: no @namespace (this is %included into browser-shared.css). */
+
+:root {
+  --tela-bg:#0e0e10; --tela-sidebar:#141416; --tela-card:#17171a;
+  --tela-surface:#1c1c1f; --tela-surface-high:#232326; --tela-hover:#1f1f22;
+  --tela-text:#e8e8ea; --tela-dim:#a0a0a6; --tela-faint:#6b6b72;
+  --tela-accent:#3ddc84; --tela-accent-dim:#1f3d2c; --tela-on-accent:#04140b;
+  --tela-border:#26262a;
+  /* exact old-Tela shape tokens (config.json rounding + pageInset) */
+  --tela-round:17px; --tela-round-sm:12px; --tela-round-lg:23px; --tela-inset:8px;
+
+  --lwt-accent-color:#0e0e10 !important;
+  --toolbar-bgcolor:#0e0e10 !important;
+  --toolbar-color:#e8e8ea !important;
+  --tabpanel-background-color:#0e0e10 !important;
+  --sidebar-background-color:#141416 !important;
+  --toolbar-field-background-color:#1c1c1f !important;
+  --toolbar-field-focus-background-color:#232326 !important;
+  --toolbar-field-border-color:transparent !important;
+  --arrowpanel-background:#232326 !important;
+  --lwt-toolbarbutton-hover-background:#1f1f22 !important;
+}
+
+/* Tela UI font (config.json fonts.main). */
+#main-window, #navigator-toolbox, #browser, .tabbrowser-tab, #urlbar, menupopup, panel {
+  font-family: "Google Sans Flex", system-ui, sans-serif !important;
+}
+
+/* All chrome surfaces opaque near-black. */
+#main-window, #navigator-toolbox, #navigator-toolbox > *,
+#browser, #appcontent, #tabbrowser-tabbox, #tabbrowser-tabpanels,
+.browserStack, #nav-bar, #TabsToolbar {
+  background-color:#0e0e10 !important;
+}
+#sidebar-box, #sidebar-main { background-color:#141416 !important; }
+
+/* ── Center card BOTTOM: web content. Connects seamlessly under the address
+   bar (which is the card's top). One rounded, bordered container. ── */
+.browserSidebarContainer {
+  margin: 0 calc(8px + var(--tela-rrail-w) + 8px) 8px calc(8px + var(--tela-rail-w) + 8px) !important;
+  border:1px solid var(--tela-border) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--tela-round) var(--tela-round) !important;
+  overflow:hidden !important;
+  background:#0e0e10 !important;
+}
+
+/* ── "P" space chip — first thing in the tab strip, so hovering it triggers
+   the native sidebar expand (part of #tabbrowser-tabs, not a separate header). ── */
+#tabbrowser-tabs::before {
+  content: "P";
+  display: flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin: 6px auto 10px auto;   /* Sidebar.qml: 22x22 r8 */
+  background: var(--tela-accent); color: var(--tela-on-accent);
+  border-radius: 8px; flex: none;
+  font: 600 12px/1 "Google Sans Flex", system-ui, sans-serif;
+}
+
+/* ── Favicon tab rail: transparent rows, green pill on active ── */
+.tabbrowser-tab .tab-background { border-radius:11px !important; border:none !important; }
+.tabbrowser-tab:hover .tab-background { background:var(--tela-hover) !important; }
+.tabbrowser-tab[selected] .tab-background,
+.tabbrowser-tab[visuallyselected] .tab-background {
+  background:var(--tela-accent-dim) !important;
+  box-shadow:inset 3px 0 0 var(--tela-accent) !important;
+}
+.tabbrowser-tab[selected] .tab-label,
+.tabbrowser-tab[visuallyselected] .tab-label {
+  color:var(--tela-accent) !important; font-weight:600 !important;
+}
+
+/* ══ Tab styles (pref tela.tabStyle = 1|2|3) ══
+   1 = Pill (default, the unconditional rule above): green-tinted pill + accent bar.
+   2 = Minimal: transparent, just a green left bar.
+   3 = Solid: full green fill, dark label. */
+:root[tela-tabstyle="2"] .tabbrowser-tab[selected] .tab-background,
+:root[tela-tabstyle="2"] .tabbrowser-tab[visuallyselected] .tab-background {
+  background: transparent !important;
+  box-shadow: inset 3px 0 0 var(--tela-accent) !important;
+}
+:root[tela-tabstyle="3"] .tabbrowser-tab[selected] .tab-background,
+:root[tela-tabstyle="3"] .tabbrowser-tab[visuallyselected] .tab-background {
+  background: var(--tela-accent) !important;
+  box-shadow: none !important;
+}
+:root[tela-tabstyle="3"] .tabbrowser-tab[selected] .tab-label,
+:root[tela-tabstyle="3"] .tabbrowser-tab[visuallyselected] .tab-label {
+  color: var(--tela-on-accent) !important;
+}
+/* also restyle the "P" chip roundness per tab style, for a cohesive feel */
+:root[tela-tabstyle="2"] #tabbrowser-tabs::before { border-radius: 50%; }
+:root[tela-tabstyle="3"] #tabbrowser-tabs::before { border-radius: 6px; }
+
+/* ── Quiet address bar (top of the card) ── */
+#nav-bar { box-shadow:none !important; border:none !important; }
+#urlbar { --toolbar-field-color:var(--tela-text) !important; }
+#urlbar-input { text-align:center; }
+
+/* Green accents on active toggles / focus. */
+#urlbar[focused] { outline:1px solid var(--tela-accent) !important; }
+
+/* ══ Layout: full-height rails pinned on both sides; the address bar sits in
+   the MIDDLE at the top (inset to clear the rails). NO forced sidebar width, so
+   expand-on-hover still widens it to show tab titles. ══ */
+:root { --tela-rail-w: 52px; --tela-rrail-w: 50px; }
+
+#sidebar-main {
+  position: fixed !important;
+  top: 8px !important; left: 8px !important; bottom: 8px !important;
+  /* Force Firefox's OWN collapsed width to match our inset, so rail == inset
+     (fixes the overlap). The native expand-on-hover then widens it, and because
+     we're position:fixed with a high z-index it overlays instead of pushing. */
+  --sidebar-launcher-collapsed-width: var(--tela-rail-w) !important;
+  min-width: var(--tela-rail-w) !important;
+  height: auto !important;
+  z-index: 5;
+  border: 1px solid var(--tela-border) !important;
+  border-radius: var(--tela-round) !important;
+  background: var(--tela-sidebar) !important;
+  transition: width .15s ease, min-width .15s ease;   /* smooth expand, like the fork themes */
+}
+/* No leftover horizontal tab strip; keep the top bar to just the address row. */
+#TabsToolbar { visibility: collapse !important; }
+#nav-bar { min-height: 0 !important; }
+#tela-right-rail {
+  position: fixed !important;
+  top: 8px !important; right: 8px !important; bottom: 8px !important;
+  width: var(--tela-rrail-w) !important; height: auto !important;
+  z-index: 4;
+  border: 1px solid var(--tela-border);
+  border-radius: var(--tela-round);
+  background: var(--tela-sidebar) !important;
+  padding: 8px 0;
+  align-items: center;
+}
+/* Center card TOP: the address bar. Inset past both rails, rounded top corners,
+   no bottom border so it joins the content card below into one container. */
+#navigator-toolbox {
+  margin: 8px calc(8px + var(--tela-rrail-w) + 8px) 0 calc(8px + var(--tela-rail-w) + 8px) !important;
+  border: 1px solid var(--tela-border) !important;
+  border-bottom: none !important;
+  border-radius: var(--tela-round) var(--tela-round) 0 0 !important;
+  background: var(--tela-bg) !important;
+}
+/* Inner toolbars transparent so the toolbox's own rounded bg+border show at the
+   corners (no square fill painting over them; no clipping of the urlbar dropdown). */
+#navigator-toolbox > *, #nav-bar, #TabsToolbar {
+  background: transparent !important;
+}
+.tela-rail-btn {
+  -moz-appearance: none; appearance: none;
+  width: 34px; height: 34px; margin: 3px 0; padding: 0;
+  border: none; border-radius: var(--tela-round-sm); background: transparent;
+  -moz-context-properties: fill; fill: var(--tela-dim);
+}
+.tela-rail-btn:hover { background: var(--tela-hover); fill: var(--tela-text); }
+.tela-rail-btn .toolbarbutton-text, .tela-rail-btn dropmarker { display: none !important; }
+.tela-rail-btn .toolbarbutton-icon { width: 20px; height: 20px; }
+.tela-rail-sep {
+  appearance: none; -moz-appearance: none; height: 0;
+  margin: 5px 11px; padding: 0; border: 0;
+  border-top: 1px solid var(--tela-border);
+}
+#tela-r-search    { list-style-image: url("chrome://global/skin/icons/search-glass.svg"); }
+#tela-r-newtab    { list-style-image: url("chrome://browser/skin/new-tab.svg"); }
+#tela-r-extensions{ list-style-image: url("chrome://mozapps/skin/extensions/extensionGeneric.svg"); }
+#tela-r-find      { list-style-image: url("chrome://global/skin/icons/search-glass.svg"); }
+#tela-r-bookmarks { list-style-image: url("chrome://browser/skin/bookmark-hollow.svg"); }
+#tela-r-history   { list-style-image: url("chrome://browser/skin/history.svg"); }
+#tela-r-downloads { list-style-image: url("chrome://browser/skin/downloads/downloads.svg"); }
+#tela-r-settings  { list-style-image: url("chrome://global/skin/icons/settings.svg"); }
+
+/* Declutter the top bar → keep back/fwd/reload · urlbar · star · menu · window
+   controls; hide Firefox's extra toolbar buttons (their jobs live in the rails). */
+#nav-bar #sidebar-button,
+#nav-bar #firefox-view-button,
+#firefox-view-button,
+#alltabs-button,
+#nav-bar #import-button,
+#nav-bar #save-to-pocket-button,
+#nav-bar #fxa-toolbar-menu-button,
+#nav-bar #library-button {
+  display: none !important;
+}
+
+/* ── Full-view media: hide the rails + card chrome so the video fills the
+   window (old Tela hides the panels on window.mediaFullScreen). ── */
+:root[inDOMFullscreen] #tela-right-rail,
+:root[inDOMFullscreen] #sidebar-main,
+:root[inDOMFullscreen] #sidebar-launcher-splitter,
+:root[inFullscreen] #tela-right-rail {
+  display: none !important;
+}
+:root[inDOMFullscreen] .browserSidebarContainer,
+:root[inDOMFullscreen] #tabbrowser-tabpanels {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Thin scrollbars. */
+:root { scrollbar-width:thin; scrollbar-color:#6b6b72 transparent; }

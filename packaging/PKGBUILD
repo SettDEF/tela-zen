@@ -1,0 +1,76 @@
+# Maintainer: SettDEF
+#
+# Builds from the working tree, not a release tarball, so `makepkg -si` after
+# any edit installs exactly what you have. Version carries the git revision and
+# commit count, which means every rebuild is newer than the last and pacman
+# will happily upgrade over it.
+
+pkgname=tela
+pkgver=0.1.0.r0.202607311405
+pkgrel=1
+pkgdesc="Keyboard-first browser with a Rust core and a QML front end"
+arch=('x86_64')
+url="https://github.com/SettDEF/tela-zen"
+license=('MIT' 'Apache')
+depends=(
+  'qt6-base'
+  'qt6-declarative'
+  'qt6-webengine'
+  'qt6-webchannel'
+  'ttf-material-symbols-variable'
+)
+makedepends=('rust' 'cargo' 'git' 'clang')
+optdepends=(
+  'rust-analyzer: Rust language support when developing Tela itself'
+)
+provides=('tela')
+conflicts=('tela')
+options=('!lto')
+
+# Built from the checkout this PKGBUILD lives in.
+_srcdir="$(realpath "${startdir}/..")"
+
+pkgver() {
+  cd "$_srcdir"
+  if git rev-parse --git-dir >/dev/null 2>&1; then
+    # <cargo version>.r<commits>.<short sha> — monotonic, so upgrades work.
+    printf '%s.r%s.%s' \
+      "$(awk -F'"' '/^version/ {print $2; exit}' Cargo.toml)" \
+      "$(git rev-list --count HEAD)" \
+      "$(git rev-parse --short HEAD)"
+  else
+    # Not a git checkout: fall back to a build timestamp so each rebuild is
+    # strictly newer than the last. Without this pacman sees an identical
+    # version and refuses to "upgrade", which is exactly what a rebuild wants.
+    printf '%s.r0.%s' \
+      "$(awk -F'"' '/^version/ {print $2; exit}' Cargo.toml)" \
+      "$(date +%Y%m%d%H%M)"
+  fi
+}
+
+build() {
+  cd "$_srcdir"
+  # CARGO_TARGET_DIR is often set globally to a shared cache; honour it so a
+  # package build reuses the same artefacts as a normal `cargo build`.
+  cargo build --release --locked --bin tela
+}
+
+check() {
+  cd "$_srcdir"
+  cargo test --release --locked --workspace
+}
+
+package() {
+  cd "$_srcdir"
+  local target="${CARGO_TARGET_DIR:-target}"
+
+  install -Dm755 "${target}/release/tela" "${pkgdir}/usr/bin/tela"
+  install -Dm644 packaging/tela.desktop "${pkgdir}/usr/share/applications/tela.desktop"
+  install -Dm644 packaging/tela.svg \
+    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/tela.svg"
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE" 2>/dev/null || true
+  for doc in README.md ROADMAP.md SECURITY.md PERFORMANCE.md; do
+    [ -f "$doc" ] && install -Dm644 "$doc" "${pkgdir}/usr/share/doc/${pkgname}/${doc}"
+  done
+}

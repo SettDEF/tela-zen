@@ -1,0 +1,16 @@
+[package]
+name = "tela-extension"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde_json = "1"
+zip = { version = "8", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+zip = { version = "8", default-features = false, features = ["deflate"] }
+
+[[bench]]
+name = "matching"
+harness = false

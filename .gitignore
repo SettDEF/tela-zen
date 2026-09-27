@@ -1,0 +1,7 @@
+target/
+packaging/pkg/
+packaging/src/
+*.pkg.tar.zst
+*.pkg.tar.xz
+# Editor-local: points at whatever build cache this machine uses.
+.qmlls.ini

@@ -1,0 +1,24 @@
+[workspace]
+resolver = "3"
+members = ["crates/tela-app", "crates/tela-block", "crates/tela-extension"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+cxx = "1.0"
+cxx-qt = "0.9"
+cxx-qt-lib = "0.9"
+cxx-qt-build = "0.9"
+adblock = "0.13"
+tela-block = { path = "crates/tela-block" }
+tela-extension = { path = "crates/tela-extension" }
+# Reading Firefox's cookie store to bring a signed-in session over. Firefox
+# keeps cookies as plain SQLite — no decryption, unlike Chrome — so this is all
+# that is needed.
+rusqlite = { version = "0.32", features = ["bundled"] }
+# Fetching userscript @require dependencies (external JS libraries). Blocking and
+# small; rustls avoids a system OpenSSL dependency.
+ureq = { version = "2", default-features = false, features = ["tls"] }
